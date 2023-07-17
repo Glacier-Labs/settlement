@@ -7,12 +7,15 @@
 const hre = require("hardhat");
 
 async function main() {
-  const Glacier = await hre.ethers.deployContract("Glacier");
-
-  await Glacier.waitForDeployment();
+  const network = 'glc001-testnet'
+  const govAddr = '0x3F878B8678BC6aFeDf3d3e6467DFfc38Fa7EFa97';
+  const zkAddr = '0x7C6Cc25f0af38F8EC7Da9C2ff75c6e049891b2ac';
+  const Glacier = await ethers.getContractFactory("Glacier");
+  const glacier = await Glacier.deploy(network, govAddr, zkAddr);
+  const glaciervAddr = await glacier.getAddress()
 
   console.log(
-    `Glacier deployed to ${Glacier.target}`
+    `Glacier deployed to ${glaciervAddr}`
   );
 }
 

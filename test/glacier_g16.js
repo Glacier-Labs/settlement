@@ -3,6 +3,7 @@ const {
 } = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const { expect } = require("chai");
 const mockBlocks = require('./mock_blocks.json');
+const { parseProof } = require('./load_proof');
 
 describe("GlacierVerifier", function () {
   async function deployFixture() {
@@ -40,13 +41,18 @@ describe("GlacierVerifier", function () {
 
 
       for (const block of mockBlocks) {
-        console.log(ethers.decodeBase64(block.blockHash))
+        // console.log(ethers.decodeBase64(block.blockHash))
+
+        const arr = parseProof(block.commitment)
+        const d = arr[3];
+        // console.log("d:", d)
+        console.log(block.blockNumber, block.blockHash)
         await glacier.commitBlock({
           blockNumber: block.blockNumber,
-          blockHash: ethers.decodeBase64(block.blockHash),
-          preblockHash: ethers.decodeBase64(block.preblockHash),
+          blockHash: block.blockHash,
+          preblockHash: block.preblockHash,
           timestamp: block.timestamp,
-          commitment: ethers.decodeBase64(block.preblockHash),
+          commitment: d,
           daid: block.daid,
         })
       }

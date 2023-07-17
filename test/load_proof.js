@@ -21,8 +21,15 @@ function loadProof(filename) {
         [convertUint8ArrayToBigInt(b10), convertUint8ArrayToBigInt(b11)],
     ];
     const c = [convertUint8ArrayToBigInt(c0), convertUint8ArrayToBigInt(c1)];
+    console.log(a, b, c)
 
     return [a, b, c];
+}
+
+function loadPublic(filename) {
+    const data = fs.readFileSync(filename);
+    const dataBytes = Uint8Array.from(data);
+    return [convertUint8ArrayToBigInt(dataBytes)]
 }
 
 function convertUint8ArrayToBigInt(uint8Array) {
@@ -35,7 +42,41 @@ function convertUint8ArrayToBigInt(uint8Array) {
     return bigint;
   }
 
-  
+  function parseProof(proof) {
+    proof = Buffer.from(proof.substring(2), 'hex')
+    const proofBytes = Uint8Array.from(proof);
+    const fpSize = 4 * 8;
+
+    // proof.Ar, proof.Bs, proof.Krs
+    const a0 = proofBytes.slice(fpSize * 0, fpSize * 1);
+    const a1 = proofBytes.slice(fpSize * 1, fpSize * 2);
+    const b00 = proofBytes.slice(fpSize * 2, fpSize * 3);
+    const b01 = proofBytes.slice(fpSize * 3, fpSize * 4);
+    const b10 = proofBytes.slice(fpSize * 4, fpSize * 5);
+    const b11 = proofBytes.slice(fpSize * 5, fpSize * 6);
+    const c0 = proofBytes.slice(fpSize * 6, fpSize * 7);
+    const c1 = proofBytes.slice(fpSize * 7, fpSize * 8);
+
+    const a = [convertUint8ArrayToBigInt(a0), convertUint8ArrayToBigInt(a1)];
+    const b =     [
+        [convertUint8ArrayToBigInt(b00), convertUint8ArrayToBigInt(b01)],
+        [convertUint8ArrayToBigInt(b10), convertUint8ArrayToBigInt(b11)],
+    ];
+    const c = [convertUint8ArrayToBigInt(c0), convertUint8ArrayToBigInt(c1)];
+
+    console.log(a, b, c)
+    const d = [convertUint8ArrayToBigInt(a0), 
+        convertUint8ArrayToBigInt(a1), 
+        convertUint8ArrayToBigInt(b00), 
+        convertUint8ArrayToBigInt(b01), 
+        convertUint8ArrayToBigInt(b10), convertUint8ArrayToBigInt(b11), 
+        convertUint8ArrayToBigInt(c0), 
+        convertUint8ArrayToBigInt(c1)]
+    return [a, b, c, d];
+}
+
 module.exports = {
-    loadProof
+    loadProof,
+    loadPublic,
+    parseProof
 }

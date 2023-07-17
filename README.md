@@ -7,9 +7,9 @@ A Contract to prove the block's DA. Any validator can submit a valid block. The 
     3. commitment
     4. governance selects the validator
 
-Everyone can verify it's valid. If not valid, slash the validator.
+Everyone can verify it's valid. If invalid, slash the validator.
 
-Just Verify without Calculate, powered by zk.
+Just Verify without Execute, powered by zk.
 
 ## Data Struct
 
@@ -41,9 +41,14 @@ daid protocol:
 
 ## Verify
 
-require(zkproof(commitment, blockhash))
-require(sha256(BlockData(DaId)) == "BlockPreImage")
+- require(zkproof(commitment, blockhash))
+- require(sha256(BlockData(DaId)) == "BlockPreImage")
 
 
 
+## Contract
 
+- opbnb
+    - ZK: 0x7C6Cc25f0af38F8EC7Da9C2ff75c6e049891b2ac
+    - Gov: 0x3F878B8678BC6aFeDf3d3e6467DFfc38Fa7EFa97
+    - GlacierV1: 0x4c63fa561D39a7E91Dd75cA75c29a5a0607157c8

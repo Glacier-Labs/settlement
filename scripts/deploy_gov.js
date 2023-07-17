@@ -7,13 +7,12 @@
 const hre = require("hardhat");
 
 async function main() {
-  const gov = await hre.ethers.deployContract("GlacierGov");
-
-  await gov.waitForDeployment();
-
-  console.log(
-    `GlacierGov deployed to ${gov.target}`
-  );
+  const [validator] = await ethers.getSigners();
+  console.log(`validator ${validator.address}`)
+  const Gov = await ethers.getContractFactory("GlacierGov");
+  const gov = await Gov.deploy(validator.address);
+  const govAddr = await gov.getAddress()
+  console.log(`deployed gov at ${govAddr}`)
 }
 
 // We recommend this pattern to be able to use async/await everywhere

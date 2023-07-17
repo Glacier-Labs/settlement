@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/consensys/gnark-crypto/ecc"
@@ -28,16 +29,17 @@ func main() {
 	{
 		f, err := os.Create("./contract/zkglacier.g16.vk")
 		checkError(err)
-
 		_, err = vk.WriteRawTo(f)
 		checkError(err)
+		fmt.Println("write ./contract/zkglacier.g16.vk done")
+
 	}
 	{
 		f, err := os.Create("./contract/zkglacier.g16.pk")
 		checkError(err)
-
 		_, err = pk.WriteRawTo(f)
 		checkError(err)
+		fmt.Println("write ./contract/zkglacier.g16.pk done")
 	}
 
 	{
@@ -46,5 +48,6 @@ func main() {
 
 		err = vk.ExportSolidity(f)
 		checkError(err)
+		fmt.Println("write ./contract/zkglacier_g16.sol done")
 	}
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"circuit/contract"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"math/big"
@@ -21,6 +22,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/backends"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core"
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/stretchr/testify/suite"
@@ -131,8 +133,6 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	proof.WriteRawTo(&buf)
 	proofBytes := buf.Bytes()
 
-	ioutil.WriteFile("../test/proof.bin", proofBytes, 0777)
-
 	// solidity contract inputs
 	var (
 		a     [2]*big.Int
@@ -177,4 +177,57 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	if t.NoError(err, "calling verifier on chain gave error") {
 		t.False(res, "calling verifier on chain succeed, and shouldn't have")
 	}
+
+	// gen mock blocks
+	blks := []BlockInfo{}
+	bcs := genTestBlockCommitment(t.T(), 5)
+	for _, bc := range bcs {
+		// generate the witness of the transfer
+		witnessFull, err := frontend.NewWitness(&bc.Witness, ecc.BN254.ScalarField())
+		if err != nil {
+			panic(err)
+		}
+
+		// generate the proof of the transfer
+		proofData, err := groth16.Prove(t.r1cs, t.pk, witnessFull)
+		if err != nil {
+			panic(err)
+		}
+		witnessPublic, err := witnessFull.Public()
+		if err != nil {
+			panic(err)
+		}
+		// Self-check the proof on the client side. Also, this proof will be submitted to ZK-Contract on the settlement EVM Chain.
+		err = groth16.Verify(proofData, t.vk, witnessPublic)
+		if err != nil {
+			panic(err)
+		}
+
+		var buf bytes.Buffer
+		proofData.WriteRawTo(&buf)
+		proofBytes := buf.Bytes()
+
+		blk := BlockInfo{
+			BlockNumber:  bc.BlockNumber,
+			BlockHash:    hexutil.Encode(bc.Hash(hFunc)),
+			PreBlockHash: hexutil.Encode(bc.PreBlockHash),
+			Timestamp:    bc.Timestamp,
+			Commitment:   hexutil.Encode(proofBytes),
+			DaId:         fmt.Sprintf("ar://arid%d?sha256=blocksha256", bc.BlockNumber),
+		}
+
+		fmt.Println(len(blk.BlockHash), len(blk.PreBlockHash), len(blk.Commitment))
+		fmt.Println(blk.BlockNumber, blk.BlockHash, blk.Commitment)
+
+		blks = append(blks, blk)
+
+		if bc.BlockNumber == 1 {
+			ioutil.WriteFile("../test/proof.bin", proofBytes, 0777)
+			ioutil.WriteFile("../test/public.bin", bc.Hash(hFunc), 0777)
+			fmt.Println("save blockNumber 1 prove&public")
+		}
+	}
+
+	data, _ := json.Marshal(blks)
+	ioutil.WriteFile("../test/mock_blocks.json", data, 0777)
 }

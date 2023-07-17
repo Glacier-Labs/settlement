@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"testing"
 	"time"
+
+	"github.com/ethereum/go-ethereum/common/hexutil"
 
 	"github.com/consensys/gnark-crypto/ecc"
 	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
@@ -19,10 +19,10 @@ import (
 
 type BlockInfo struct {
 	BlockNumber  uint64 `json:"blockNumber"`
-	BlockHash    []byte `json:"blockHash"`
-	PreBlockHash []byte `json:"preblockHash"`
+	BlockHash    string `json:"blockHash"`    // hex
+	PreBlockHash string `json:"preblockHash"` // hex
 	Timestamp    uint64 `json:"timestamp"`
-	Commitment   []byte `json:"commitment"`
+	Commitment   string `json:"commitment"` // hex
 	DaId         string `json:"daid"`
 }
 
@@ -109,10 +109,10 @@ func TestZKSnarkProof(t *testing.T) {
 
 		blk := BlockInfo{
 			BlockNumber:  bc.BlockNumber,
-			BlockHash:    bc.Hash(hFunc),
-			PreBlockHash: bc.PreBlockHash,
+			BlockHash:    hexutil.Encode(bc.Hash(hFunc)),
+			PreBlockHash: hexutil.Encode(bc.PreBlockHash),
 			Timestamp:    bc.Timestamp,
-			Commitment:   proofBytes,
+			Commitment:   hexutil.Encode(proofBytes),
 			DaId:         fmt.Sprintf("ar://arid%d?sha256=blocksha256", bc.BlockNumber),
 		}
 
@@ -120,6 +120,6 @@ func TestZKSnarkProof(t *testing.T) {
 		blks = append(blks, blk)
 	}
 
-	data, _ := json.Marshal(blks)
-	ioutil.WriteFile("../test/mock_blocks.json", data, 0777)
+	// data, _ := json.Marshal(blks)
+	// ioutil.WriteFile("../test/mock_blocks.json", data, 0777)
 }
