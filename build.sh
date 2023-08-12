@@ -12,3 +12,6 @@ npx hardhat run scripts/deploy_zk.js --network opbnbtestnet
 npx hardhat run scripts/deploy_gov.js --network opbnbtestnet
 npx hardhat run scripts/deploy.js --network opbnbtestnet
 npx hardhat run scripts/test_opbnb.js  --network opbnbtestnet
+
+
+npx hardhat run scripts/deploy_gov.js --network NautilusTestnet

@@ -7,12 +7,10 @@
 const hre = require("hardhat");
 
 async function main() {
-  const zk = await hre.ethers.deployContract("Verifier");
-
-  await zk.waitForDeployment();
-
+  const Zk = await hre.ethers.deployContract("Verifier");
+  const zk = await Zk.deployed();
   console.log(
-    `GlacierZK deployed to ${zk.target}`
+    `GlacierZK deployed to ${zk.address}`
   );
 }
 

@@ -10,7 +10,7 @@ const mockBlocks = require('../test/mock_blocks.json');
 const { parseProof } = require('../test/load_proof');
 
 async function main() {
-  const glacierAddr = '0x4c63fa561D39a7E91Dd75cA75c29a5a0607157c8';
+  const glacierAddr = '0xb16801c660A0777c3A2fE81a577De38071d6364F';
 
   const glacier = await hre.ethers.getContractAt("Glacier", glacierAddr);
 
@@ -20,7 +20,7 @@ async function main() {
   expect(await glacier.GLACIER_NETWORK()).to.equal('glc001-testnet');
 
   for (const block of mockBlocks) {
-    console.log(ethers.decodeBase64(block.blockHash))
+    // console.log(ethers.decodeBase64(block.blockHash))
     const arr = parseProof(block.commitment)
     const d = arr[3];
     await glacier.commitBlock({

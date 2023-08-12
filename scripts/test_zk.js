@@ -5,18 +5,26 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+const { expect } = require("chai");
+const { loadProof, loadPublic } = require('../test/load_proof');
 
 async function main() {
-  const network = 'glc001-testnet'
-  const govAddr = '0xf10b40cE6C9071fA89649D4E1A87f07660eeF79f';
-  const zkAddr = '0x9bF378F23C51b9faAf3541B1462A056BB0a7A087';
-  const Glacier = await ethers.getContractFactory("Glacier");
-  const glacier = await Glacier.deploy(network, govAddr, zkAddr);
-  const glaciervAddr = await glacier.getAddress()
+  const zkAddr = '0xDDac83FA3C72276aAaf0045551c4F9FbAA35375a';
 
-  console.log(
-    `Glacier deployed to ${glaciervAddr}`
-  );
+  const zk = await hre.ethers.getContractAt("Verifier", zkAddr);
+
+  const arr = loadProof('./test/proof.bin')
+
+  let a = arr[0];
+  let b = arr[1];
+  let c = arr[2];
+  let input = loadPublic('./test/public.bin')
+  console.log(`a ${a}`)
+  console.log(`b ${b}`)
+  console.log(`c ${c}`)
+  console.log(`input ${input}`)
+
+  console.log(await zk.verifyProof(a, b, c, input))
 }
 
 // We recommend this pattern to be able to use async/await everywhere
