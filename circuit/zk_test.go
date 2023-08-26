@@ -10,7 +10,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/hexutil"
 
 	"github.com/consensys/gnark-crypto/ecc"
-	"github.com/consensys/gnark-crypto/ecc/bn254/fr"
 	"github.com/consensys/gnark-crypto/ecc/bn254/twistededwards/eddsa"
 	"github.com/consensys/gnark/backend/groth16"
 	"github.com/consensys/gnark/frontend"
@@ -26,9 +25,29 @@ type BlockInfo struct {
 	DaId         string `json:"daid"`
 }
 
+func genTestTx(size int) (txs []Tx) {
+	for i := 0; i < size; i++ {
+		nonce := rand.Int63()
+		src := rand.NewSource(int64(1))
+		r := rand.New(src)
+		// a test account
+		sender, err := eddsa.GenerateKey(r)
+		if err != nil {
+			panic(err)
+		}
+
+		tx := Tx{
+			TxHash:    sha256Sum([]byte(fmt.Sprintf("tx/%d", nonce))),
+			Nonce:     uint64(nonce),
+			Timestamp: uint64(time.Now().Unix()),
+		}
+		tx.Sign(*sender, hFunc)
+		txs = append(txs, tx)
+	}
+	return
+}
+
 func genTestBlockCommitment(t *testing.T, size int) (bcs []BlockCommitment) {
-	var rnd fr.Element
-	rnd.SetUint64(uint64(0))
 	src := rand.NewSource(int64(0))
 	r := rand.New(src)
 	// a test account
@@ -42,7 +61,9 @@ func genTestBlockCommitment(t *testing.T, size int) (bcs []BlockCommitment) {
 	for i := 1; i < size; i++ {
 		blockpreimage := sha256Sum([]byte(fmt.Sprintf("[tx01, tx02, tx03]/testdata,%d", i)))
 		ts := uint64(time.Now().Unix())
-		bc := NewBlockCommitment(blockpreimage, preBlockhash, uint64(i), ts, validator.PublicKey)
+
+		txs := genTestTx(MaxLeafNum)
+		bc := NewBlockCommitment(blockpreimage, preBlockhash, uint64(i), ts, validator.PublicKey, txs)
 		// sign the transfer on the client side.
 		_, err = bc.SignWitness(*validator, hFunc)
 		if err != nil {
@@ -68,6 +89,9 @@ func genTestBlockCommitment(t *testing.T, size int) (bcs []BlockCommitment) {
 func TestZKSnarkProof(t *testing.T) {
 	// step0: compile circuit
 	var circuit Circuit
+	for i := 0; i < MaxLeafNum; i++ {
+		circuit.TxProofs[i].Path = make([]frontend.Variable, TreeDepth)
+	}
 
 	r1cs, err := frontend.Compile(ecc.BN254.ScalarField(), r1cs.NewBuilder, &circuit)
 	if err != nil {
@@ -80,7 +104,7 @@ func TestZKSnarkProof(t *testing.T) {
 	}
 
 	blks := []BlockInfo{}
-	bcs := genTestBlockCommitment(t, 5)
+	bcs := genTestBlockCommitment(t, 1)
 	for _, bc := range bcs {
 		// generate the witness of the transfer
 		witnessFull, err := frontend.NewWitness(&bc.Witness, ecc.BN254.ScalarField())

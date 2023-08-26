@@ -12,6 +12,12 @@ Everyone can verify it's valid. If invalid, slash the validator.
 Just Verify without Execute, powered by zk.
 
 ## Data Struct
+tx:
+
+    - txHash
+    - timestamp
+    - nonce
+    - sgin
 
 block:
 
@@ -23,6 +29,10 @@ block:
     - sign
     - daid
 
+    - txRootHash 
+    - txs // txs in this block
+    - txProofs // zk tx include proof
+
 daid protocol:
 
     - ar://<arid>?sha256=<hash_of_data>
@@ -32,17 +42,24 @@ daid protocol:
 ## ZK Proof
 
 - blockpreimage = sha256(blockData)
-- blockHash = mimcHash(blocknumber, blockpreimage, preblockhash, timestamp)
+- blockHash = mimcHash(blocknumber, blockpreimage, preblockhash, timestamp, txRootHash)
 - sign = zksign(validator, blockHash)
 - commitment = zkProof(blocknumber, blockpreimage, preblockhash, timestamp, sign)
 
     - public: 
         - blochHash
 
+- txHash = mimcHash(txpreimage, timestamp, nonce)
+- txIncludeCommitments, txRootHash = zkInclusionProofs(txHashs)
+    - public:
+        - txRootHash
+
 ## Verify
 
+- require(zkproof(txIncludeCommitment, txHashIndex, txRootHash))
 - require(zkproof(commitment, blockhash))
 - require(sha256(BlockData(DaId)) == "BlockPreImage")
+
 
 
 

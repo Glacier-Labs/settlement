@@ -103,7 +103,8 @@ func (t *ExportSolidityTestSuiteGroth16) TestVerifyProof() {
 	blockpreimage := sha256Sum([]byte("/block_data"))
 	preBlockhash := sha256Sum([]byte(""))
 	ts := uint64(time.Now().Unix())
-	bc := NewBlockCommitment(blockpreimage, preBlockhash, 1, ts, owner.PublicKey)
+	txs := genTestTx(16)
+	bc := NewBlockCommitment(blockpreimage, preBlockhash, 1, ts, owner.PublicKey, txs)
 
 	// sign the transfer on the client side.
 	_, err = bc.SignWitness(*owner, hFunc)
