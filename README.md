@@ -88,4 +88,12 @@ for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract Glacier on the block explorer.
 https://opbnbscan.com/address/0x4c63fa561D39a7E91Dd75cA75c29a5a0607157c8#code
+
+npx hardhat run --network opbnbtestnet scripts/verify_contract_zk.js
+Successfully submitted source code for contract
+contracts/zkglacier_g16.sol:Verifier at 0x7C6Cc25f0af38F8EC7Da9C2ff75c6e049891b2ac
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract Verifier on the block explorer.
+https://opbnbscan.com/address/0x7C6Cc25f0af38F8EC7Da9C2ff75c6e049891b2ac#code
 ```
