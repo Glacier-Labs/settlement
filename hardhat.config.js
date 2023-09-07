@@ -1,9 +1,11 @@
 require('dotenv').config();
 require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-verify");
 
 
 OPBNB_PRIVATE_KEY = process.env.OPBNB_PRIVATE_KEY
 TESTER_PRIVATE_KEY = process.env.TESTER_PRIVATE_KEY
+NODEREAL_API_KEY = process.env.NODEREAL_API_KEY
 
 /** @type import('hardhat/config').HardhatUserConfig */
 module.exports = {
@@ -45,6 +47,7 @@ module.exports = {
   networks: {
     opbnbtestnet: {
       url: `https://opbnb-testnet-rpc.bnbchain.org`,
+      chainId: 5611,
       accounts: [OPBNB_PRIVATE_KEY]
     },
     nautchain: {
@@ -53,6 +56,21 @@ module.exports = {
     },
     localhost: {
       accounts: [TESTER_PRIVATE_KEY]
-    }
+    },
   },
+  etherscan: {
+    apiKey: {
+      opbnbtestnet: NODEREAL_API_KEY,//replace your nodereal API key
+    },
+   customChains: [
+    {
+     network: "opbnbtestnet",
+     chainId: 5611,
+     urls: {
+       apiURL:  `https://open-platform.nodereal.io/${NODEREAL_API_KEY}/op-bnb-testnet/contract/`,
+       browserURL: "https://opbnbscan.com/",
+     },
+    },
+   ],
+   },
 };
