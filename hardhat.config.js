@@ -53,6 +53,11 @@ module.exports = {
       chainId: 88002,
       accounts: [OPBNB_PRIVATE_KEY]
     },
+    NautilusMainnet: {
+      url: "https://api.nautilus.nautchain.xyz",
+      chainId: 22222,
+      accounts: [OPBNB_PRIVATE_KEY]
+    },
     goeril: {
       url: `https://eth-goerli.api.onfinality.io/public`,
       accounts: [GOERIL_PRIVATE_KEY]

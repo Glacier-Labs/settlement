@@ -9,7 +9,7 @@ const { expect } = require("chai");
 const { loadProof, loadPublic } = require('../test/load_proof');
 
 async function main() {
-  const zkAddr = '0xDDac83FA3C72276aAaf0045551c4F9FbAA35375a';
+  const zkAddr = '0x80c748Cf77E9045F601a73df8A442045c7B4C4c7';
 
   const zk = await hre.ethers.getContractAt("Verifier", zkAddr);
 

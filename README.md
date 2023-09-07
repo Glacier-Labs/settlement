@@ -65,6 +65,11 @@ daid protocol:
     - ZK 0.8.14: 0xbe6E0Cf9f127D70A4aE06345AA47b34e203EeD0e
     - ZK 0.8.10: 0xE6835CBD67073C47Ee10bc70DeF0Fa050516c090
 
+- Nauilus Mainnet:
+    - ZK: 0x80c748Cf77E9045F601a73df8A442045c7B4C4c7
+    - Gov: 0xDDac83FA3C72276aAaf0045551c4F9FbAA35375a
+    - GlacierV1: 0x593fF81a2b7F1819707444b7792fa5d8F72c5819
+
 - https://www.eclipse.builders/
     - https://docs.eclipse.builders/building-on-eclipse/documentation-for-eclipse-with-evm
 

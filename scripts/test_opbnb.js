@@ -10,7 +10,7 @@ const mockBlocks = require('../test/mock_blocks.json');
 const { parseProof } = require('../test/load_proof');
 
 async function main() {
-  const glacierAddr = '0xb16801c660A0777c3A2fE81a577De38071d6364F';
+  const glacierAddr = '0x593fF81a2b7F1819707444b7792fa5d8F72c5819';
 
   const glacier = await hre.ethers.getContractAt("Glacier", glacierAddr);
 
